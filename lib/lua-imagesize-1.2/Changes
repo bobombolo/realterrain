@@ -1,0 +1,12 @@
+1.2     2012-09-08
+
+ * Add support for old-style OS/2 headers (the old 12 byte BITMAPCOREHEADER
+   using two bytes instead of four for each of width and height).
+
+1.1     2012-07-17
+
+ * Minor packaging updates.
+
+1.0     2008-04-07
+
+ * Initial release, based on Perl Image::Size version 3.1.1.

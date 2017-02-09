@@ -1,0 +1,15 @@
+Copying and distribution are permitted under the terms of the Artistic
+License 2.0 (http://www.opensource.org/licenses/artistic-license-2.0.php) or
+the GNU LGPL (http://www.opensource.org/licenses/lgpl-license.php).
+
+This Lua module was ported from the Perl Image::Size module by
+Geoff Richards.  The Lua port and documentation is Copyright (c) 2008
+Geoff Richards <geoff@geoffrichards.co.uk>.
+
+The original Perl module was written by Randy J. Ray
+<rjray@blackperl.com>, based on image-sizing code by Alex Knowles
+<alex@ed.ac.uk> and Andrew Tong <werdna@ugcs.caltech.edu>,
+used with their joint permission.
+
+Many bug fixes and patches were provided by other people.  See the
+documentation for the Image::Size Perl module for details.

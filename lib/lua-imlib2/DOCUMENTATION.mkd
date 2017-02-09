@@ -1,0 +1,352 @@
+# `imlib2.color`
+Represent colors in rgba format. Each instance of imlib2.color has the 
+modifiable fields red, green, blue and alpha. An error will be raised on an 
+attempt to set them to a value outside of the range `0 <= x <= 255`.  
+Non-integer values will be truncated.
+
+## `imlib2.color.new(red, green, blue[, alpha])`
+Creates a new color.  An error will be raised unless red, green, blue and 
+alpha are in the range `0 <= x <= 255`.
+
+## `col.red`, `col.green`, `col.blue`, `col.alpha`
+Each instance of  `imlib2.color` has integer fields `red`, `green`, `blue`, 
+and `alpha` which can be read and modified. An exception is raised if you try 
+to set the value outside the range `0 <= x <= 255`.
+
+# `imlib2.border`
+Represents a border. Contains left, top, right, bottom values as mutable 
+fields. A border is the area at the edge of an image that does not scale when 
+the rest of the image is resized - the borders remain constant in size.
+
+## `imlib2.border.new(left, top, right, bottom)`
+Creates a new border. `left`, `top`, `right` and `bottom` are the size of each 
+side of the border in pixels.
+
+## `bd.left`, `bd.top`, `bd.right`, `bd.bottom`
+Each instance of `imlib2.border` has these mutable fields.
+
+# `imlib2.gradient`
+Consists of colours and the offsets at which they occur.
+
+## `imlib2.gradient.new()`
+Creates a new gradient. Use `grad:add_color()` to add colors to it.
+
+## `grad:add_color(offset, color)`
+Add an `imlib2.color` instance at the given `offset`. `offset` is the distance 
+from the previous color in pixels. It has no meaning for the first color 
+added.
+
+# `imlib2.polygon`
+Represents a polygon object. Points are drawn in the order in which they are 
+added.
+
+## `imlib2.polygon.new() `
+Create a new polygon. Add points using `poly:add_point()`.
+
+## `poly:add_point(x, y)`
+Add point (x,y) to the polygon. `x` is the x coordinate in pixels, and `y` is 
+is the y coordinate in pixels.
+
+## `poly:get_bounds()`
+Returns the four points of the rectangular bounding area for the polygon.
+
+Returns `x1`, `y1` `x2`, `y2`:
+
+* `x1`: x coordinate of the upper left corner
+* `y1`: y coordinate of the upper left corner
+* `x2`: x coordinate of the upper right corner
+* `y2`: y coordinate of the lower right corner
+
+## `poly:contains_point(x, y)`
+Returns true if the polygon contains point (x,y).
+
+# `imlib2.font`
+Instances represent a loaded font. Provides static methods for querying and 
+modifying the font paths used by imlib2.
+
+## `imlib2.font.load(name)`
+Load the given font from the current font path. `name` is a font path, e.g.  
+"Vera/10". It returns a font object for a given font name, nil plus an error 
+message if no such font can be found on the path.
+
+## `imlib2.font.add_path(path)`
+Add the given `path` to the list of paths Imlib2 searches when loading a font.
+
+## `imlib2.font.remove_path(path)`
+Remove the given `path` from Imlib2's font path list.
+
+## `imlib2.font.list_paths()`
+Returns a table containing all the font paths Imlib2 will search when asked to 
+load a font.
+
+## `imlib2.font.list_fonts()`
+Returns an array of all the font names Imlib2 can find on its font path.
+
+## `imlib2.font.get_cache_size()`
+Returns the font cache size in bytes.
+
+## `imlib2.font.set_cache_size()`
+Sets the font cache size in bytes. Whenever you set the font cache size, 
+Imlib2 will flush fonts from the cache until the memory used by fonts is 
+less than or equal to the font cache size. Setting the size to 0 frees all 
+speculatively cached fonts.
+
+## `imlib2.font.set_direction(dir[, angle])`
+Sets the direction that text will be drawn at. Accepts 90 degree 
+orientations, or an arbitrary angle. Raises an error for invalid direciton 
+names. Takes parameters:
+
+* `dir` can be `"right"`, `"left"`, `"down"`, `"up"` or `"angle"` (in which 
+  case parameter `angle` must be given)
+* `angle` given in radians. Only needed if `direction` was `"angle"`.
+
+## `imlib2.font.get_direction()`
+Gives the direction that text is set to be drawn at. Returns one of the 
+strings `"right"`, `"left"`, `"down"`, `"up"` or `"angle"`. If `"angle"` is 
+returned, then the angle in radians is given as the second return value.
+
+
+## `fnt:get_size(str)`
+Get the width and height of the given string when drawn with `fnt`. Returns 
+the width and height in pixels.
+
+## `fnt:get_advance(str)`
+Get the horizontal and vertical advance of the given string when drawn with 
+`fnt`. The horizontal and vertical advance are the number of pixels away the 
+next string would need to be placed at. The advances are not adjusted for 
+rotation, and are calculated as if the text was drawn horizontally from left 
+to right.
+
+Returns the horizontal and vertical advance in pixels.
+
+## `fnt:get_inset(str)`
+The inset in pixels of the first character of the given string.
+
+## `fnt:get_ascent()`
+Get the font's ascent in pixels.
+
+## `fnt:get_maximum_ascent()`
+Get the font's maximum ascent in pixels.
+
+## `fnt:get_descent()`
+Get the font's descent in pixels.
+
+## `fnt:get_maximum_descent()`
+Get the font's maximum descent in pixels.
+
+# `imlib2.image`
+Methods for image loading, saving and manipulation.
+
+## `image.new(width, height)`
+Create a new image. `width` and `height` are given in pixels.
+
+## `image.load(path)`
+Loads the image at the given path. Imlib2 searches its loader modules until it 
+finds one that can decode the file at the given path. The loader modules 
+available to you (and hence the range of filetypes you are able to load) will 
+depend on the options used when building the Imlib2 shared library.  Loaders 
+will not decode image data until it is needed (provided this is feasible for 
+the given file format). This means it is perfectly sensible to load many files 
+in order to query their header information such as width and height. If the 
+image is present in Imlib2's cache, it won't check if the file has changed and 
+will instead just return that cached version of the image.
+
+Returns the loaded image or else nil plus an error message
+
+## `img:free()`
+Frees the image. This does not evict the image from Imlib2's cache.
+
+## `img:clone()`
+Obtain a clone of the image.
+
+## `img:get_width()`
+Get the width of the image in pixels.
+
+## `img:get_height()`
+Get the height of the image in pixels.
+
+## `img:get_filename()`
+Returns the current image filename.
+
+## `img:get_format()`
+Get the current image format.
+
+## `img:set_format(format)`
+Sets the image format to the given string. No check is made to ensure that the 
+Imlib2 shared library can save in this format. If it can not, `img:save()` 
+will later fail.
+
+## `img:has_alpha()`
+Gives a boolean value indicating whether the image has an alpha channel.
+
+## `img:set_alpha(bool)`
+Enable or disable the image's alpha channel based on the given boolean.
+
+## `img:get_border()`
+Get the imlib2.border object for `img`.
+
+## `img:set_border(border)`
+Sets the image border to the given `imlib2.border` object.
+
+## `img:get_pixel(x, y)`
+Gives the color of the pixel at the given (x,y) coordinates. The origin - 
+(0,0) is at the top left.
+
+Return an instance of imlib2.color matching the color at the given 
+coordinates.
+
+## `img:crop(x, y, width, height)`
+Crops the image to the given rectangle.
+
+Takes the parameters:
+
+* `x` the x coordinate of the top left corner
+* `y` the y coordinate of the top left corner
+* `width` the width of the rectangle
+* `height` the height of the rectangle
+
+## `img:crop_and_scale(source_x, source_y, source_h, source_w, dest_w, dest_h)`
+Crops the image to the given rectangle and also scales it. The image will be 
+scaled to the given destination width and height.
+
+Takes the parameters:
+
+* `source_x` the x coordinate of the top left corner of the source rectangle
+* `source_y` the y coordinate of the top left corner of the source rectangle
+* `source_h` the height of the source rectangle
+* `source_w` the width of the source rectangle
+* `dest_w` the width of the destination rectangle
+* `dest_h` the height of the destination rectangle
+
+## `img:rotate(angle)`
+Rotates the image by `angle` radians.
+
+## `img:flip_horizontal()`
+Flips the image horizontally
+
+## `img:flip_vertical()`
+Flips the image vertically
+
+## `img:flip_diagonal()`
+Flips the image diagonally.
+
+## `img:orientate(n)`
+Performs `n` 90 degree rotations on the image. `n` is the integer number of 90 
+degree rotations to perform.
+
+## `img:blur(radius)`
+Blurs the image. A radious value of `0` has no effect. `1` and above determine 
+the blur matrix radius that determines how much to blur the image.
+
+## `img:sharpen(radius)`
+Sharpens the image. The radius affects how much to sharpen by.
+
+## `img:tile_horizontal()`
+Modifies the image so it will tile seamlessly horizontally.
+
+## `img:tile_vertical()`
+Modifies the image so it will tile seamlessly vertically.
+
+## `img:tile()`
+Modifies the image so it will tile seamless horizontally and vertically.
+
+## `img:clear()`
+Clears the contents of the image.
+
+## `img:draw_pixel(x, y[, color])`
+Draw a pixel at the specified coordinates in the given `color` (an 
+`imlib2.color` object). If no color is specified then the pixel will be drawn 
+in the most recent color.
+
+## `img:draw_line(x1, y1, x2, y2[, color])`
+Draw a line from (x1, y1) to (x2, y2). If no color is specified, then it will 
+be drawn in the most recent color.
+
+## `img:draw_rectangle(x, y, width, height[, color])`
+Draws the outline of a rectangle. If no color is specified, then it will be 
+drawn in the most recent color.
+
+## `img:fill_rectangle(x, y, width, height, color)`
+Draws a filled rectangle. If no color is specified, then it will be drawn in 
+the most recent color.
+
+## `img:scroll_rectangle(x, y, width, height, delta_x, delta_y)`
+Scrolls the specified rectangle by the given displacement.
+
+## `img:copy_rectangle(x, y, width, height, new_x, new_y)`
+Copies the given rectangle to (new_x, new_y).
+
+## `img:fill_gradient(gradient, x, y, width, height, angle)`
+Fills a rectangle with the given gradient.
+
+Takes the parameters:
+
+* `gradient` an imlib2.gradient object
+* `x` the x coordinate of the rectangle's top left corner
+* `y` the y coordinate of the rectangle's top left corner
+* `width` the width of the rectangle
+* `height` the height of the rectangle
+* `angle` the angle at which the gradient will be drawn
+
+## `img:draw_ellipse(xc, yc, a, b[, color])`
+Draws the outline of an ellipse. (xc, yc) is the centre of the ellipse, which 
+is described by the equation `(x-xc)^2/a^2 + (y-yc)^2/b^2 = 1`. If no color is 
+specified then it will be drawn in the most recent color.
+
+Takes the parameters:
+
+* `xc` x coordinate of the centre of the ellipse
+* `yc` y coordinate of the centre of the ellipse
+* `a` horizontal amplitude
+* `b` vertical amplitude
+* `color` (optional) an `imlib2.color` object
+
+## `img:fill_ellipse(xc, yc, a, b[, color])`
+Fills an ellipse. See `img:draw_ellipse()` for the meaning of the parameters.
+
+## `img:draw_polygon(polygon, closed[, color])`
+Draws the outline of a polygon. Points in the `imlib2.polygon` are drawn in 
+the order in which they were added. The final point will be connected to the 
+first point if `closed` is true. If no color is specified then it will be 
+drawn in the most recent color.
+
+## `img:fill_polygon(polygon[, color])`
+Fills a `imlib2.polygon`. If no color is specified then it will be drawn in 
+the most recent color.
+
+## `img:draw_text(font, string, x, y[, color])`
+Draws a string in the given font at point (x, y). If no color is specified 
+then it will be drawn in the most recent color.
+
+Takes the parameters:
+
+* `font` an imlib2.font object
+* `string` the string to be drawn
+* `x` the x coordinate of the point to start drawing
+* `y` the y coordinate of the point to start drawing
+
+## `img:save(path)`
+Saves the image to the given path. The file extension (e.g. .png or .jpg) will 
+affect the output format (but will not override any format set by a call to 
+`img:set_format()`).
+
+Returns `true` or `nil` plus an error message if the save fails.
+
+# `imlib2`
+Functions to modify the operation of the imlib2 library.
+
+## `imlib2.set_anti_alias(bool)`
+Enable or disable anti-aliasing for future drawing operations.
+
+## `imlib2.get_anti_alias()`
+Gives a boolean indicating whether anti-aliasing is enabled or disabled.
+
+## `imlib2.get_cache_size()`
+Gives the current size of the image cache in bytes
+
+## `imlib2.set_cache_size(size)`
+Set the size of the image cache, where `size` is the desired cache size in 
+bytes.
+
+## `imlib2.flush_cache()`
+Flushes the image cache.

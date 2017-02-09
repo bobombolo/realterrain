@@ -1,0 +1,1 @@
+A mapgen mod that allows any image to be used as a heightmap. If the image is not grayscale then the red channel is used. A tool is provided to change settings in-game.

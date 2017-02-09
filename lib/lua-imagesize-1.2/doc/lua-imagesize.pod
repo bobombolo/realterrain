@@ -1,0 +1,243 @@
+=head1 Name
+
+Lua-ImageSize - Lua 5.1 module for getting the size of bitmap image files
+
+=head1 Description
+
+This module can tell you the size in pixels of bitmap images in various
+formats, as well as what file format they are in.  It's a small module
+which only knows how to extract the size information from image files,
+not a full graphics library.  It is written in pure Lua, so doesn't require
+any compilation, and it doesn't depend on any other Lua modules.
+
+=head1 Loading the module
+
+The ImageSize module doesn't install itself into any global tables, so you can
+decide what name you want to use to access it.  You will probably want to
+load it like this:
+
+=for syntax-highlight lua
+
+    local ImageSize = require "imagesize"
+
+You can use a variable called something other than C<ImageSize> if you'd like,
+or you could assign the table returned by C<require> to a global variable.
+In this documentation we'll assume you're using a variable called C<ImageSize>.
+
+=head1 Finding the size of an image
+
+To get the size and type of an image stored in a file on disk:
+
+=for syntax-highlight lua
+
+    local width, height, format = ImageSize.imgsize(filename)
+
+The width and height will be integer numbers, and the format will be
+a string containing a MIME type (often an unofficial one like
+C<image/x-xpixmap>).
+
+If the file can't be read, is in an unrecognized format, or is corrupted,
+then the width and height will be nil, and the format will be replaced by
+an error message.  If you want to detect errors, use this idiom:
+
+=for syntax-highlight lua
+
+    local width, height, format = ImageSize.imgsize(filename)
+    assert(width, "error getting size of image: " .. format)
+
+Instead of a filename you can also pass an open file handle in to the
+C<imgsize> function.  It must support seeking.  It's current position
+will be restored before the function returns.
+
+You can also get the size of an image file stored in a string, using
+the alternative function C<imgsize_string>, like this:
+
+=for syntax-highlight lua
+
+    local file = assert(io.open(filename, "rb"))
+    local data = file:read("*a")
+    file:close()
+
+    local width, height, format = ImageSize.imgsize_string(data)
+
+=head1 Functions
+
+The table returned from C<require "imagesize"> will contain the following
+functions:
+
+=over
+
+=item imgsize(file, [options])
+
+Reads data from C<file> (either a string containing a filename, or a
+Lua file handle), and if possible returns three values, the width, height,
+and MIME type of the image.  If there is any kind of error then the three
+values returned will be nil, nil, and a string describing the error.
+
+If C<options> is present it must be a table of values to tune how certain
+file formats are treated.  The options available are documented in the
+section ‘File formats’ below.  If an option has an invalid value then
+an error will be raised (this being the only kind of error which will
+be returned as an exception rather than with return values).
+
+The C<file> argument can also be a file handle created by the
+L<lua-memoryfile(3)> module.
+
+=item imgsize_string(str, [options])
+
+This behaves identically to C<imgsize>, except that the binary data in the
+string C<str> is examined instead of the content of a file.
+
+=back
+
+=head1 File formats
+
+The following file formats are supported, and return the specified MIME
+type:
+
+=over
+
+=item BMP
+
+Windows bitmap images, C<image/x-ms-bmp>
+
+=item GIF
+
+GIF87a and GIF89a images or animations, C<image/gif>
+
+Accepts the option C<gif_behavior> (note the non-British spelling), which can
+take any of the following strings as its value:
+
+=over
+
+=item screen
+
+Returns the size of the whole image, which should be large enough to
+accommodate all the frames of the animation.
+
+=item first
+
+Returns the size of the first frame, which may be smaller than the display
+size of the whole animation.
+
+=item largest
+
+Returns the size of the largest frame in the animation.
+
+=back
+
+The default value is C<screen>.
+
+=item JPEG
+
+JFIF JPEG images, C<image/jpeg>
+
+=item MNG
+
+MNG animations, C<video/x-mng>
+
+=item PCD
+
+Kodak Photo CD images, C<image/x-kodak-photocd>
+
+Note that the code for this hasn't been tested since it was ported from
+Perl, because I can't find any PCD images anywhere to test against.
+
+The option C<pcd_scale> can be used to select the scale at which the
+image should be decompressed.  It seems that PCD images don't have a single
+intrinsic size, or perhaps have several, so there's no one right answer
+to this.  The acceptable values for this option are:
+
+=over
+
+=item *
+
+base/16
+
+=item *
+
+base/4
+
+=item *
+
+base
+
+=item *
+
+base4
+
+=item *
+
+base16
+
+=item *
+
+base64
+
+=back
+
+The default value is C<base>.
+
+=item PNG
+
+PNG images, C<image/png>
+
+=item PNM
+
+Any of the ‘portable anymap’ formats: PPM (C<image/x-portable-pixmap>),
+PGM (C<image/x-portable-graymap>), or PBM (C<image/x-portable-bitmap>).
+Also supported are the thumbnail files generated by XV
+(C<image/x-xv-thumbnail>, a MIME type I invented for this purpose).
+
+=item PSD
+
+Photoshop images, C<image/x-photoshop>
+
+=item Flash
+
+Macromedia Flash animations (SWF files), C<application/x-shockwave-flash>
+
+Note that currently compressed SWF files are not supported (one which begins
+with the letters C<CWS> rather than C<FWS>).
+
+=item TIFF
+
+TIFF/TIF images, C<image/tiff>
+
+=item XBM
+
+X Bitmap images, C<image/x-xbitmap>
+
+=item XCF
+
+XCF images, usually used for saving a work-in-progress in The Gimp,
+C<application/x-xcf>
+
+Note that currently these are only recognized when not compressed.
+
+=item XPM
+
+X Pixmap images, C<image/x-xpixmap>
+
+=back
+
+=head1 Copyright
+
+Copying and distribution are permitted under the terms of the Artistic
+License 2.0 (L<http://www.opensource.org/licenses/artistic-license-2.0.php>) or
+the GNU LGPL (L<http://www.opensource.org/licenses/lgpl-license.php>).
+
+This Lua module was ported from the Perl L<Image::Size> module by
+Geoff Richards.  The Lua port and documentation is Copyright E<copy> 2008
+Geoff Richards E<lt>geoff@geoffrichards.co.ukE<gt>.
+
+The original Perl module was written by Randy J. Ray
+E<lt>rjray@blackperl.comE<gt>, based on image-sizing code by Alex Knowles
+E<lt>alex@ed.ac.ukE<gt> and Andrew Tong E<lt>werdna@ugcs.caltech.eduE<gt>,
+used with their joint permission.
+
+Many bug fixes and patches were provided by other people.  See the
+documentation for the L<Image::Size> Perl module for details.
+
+=for comment
+vi:ts=4 sw=4 expandtab

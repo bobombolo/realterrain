@@ -1,0 +1,13 @@
+Support creating colors from a single integer representation, and possibly in 
+the other forms supported by imlib
+
+Support im:scale(w,h) - maybe scale by percentage
+
+Make an imlib2.color_modifier
+
+Add new image constructors such as new_cropped(im, ...)
+
+Write a sparkline library using imlib2
+
+Steal interface ideas from 
+http://search.cpan.org/~lbrocard/Image-Imlib2-1.13/lib/Image/Imlib2.pm

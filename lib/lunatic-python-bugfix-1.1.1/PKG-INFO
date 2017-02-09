@@ -1,0 +1,16 @@
+Metadata-Version: 1.0
+Name: lunatic-python-bugfix
+Version: 1.1.1
+Summary: Two-way bridge between Python and Lua
+Home-page: https://github.com/locationlabs/lunatic-python
+Author: Gustavo Niemeyer
+Author-email: gustavo@niemeyer.net
+License: LGPL
+Description: Includes bugfixes on the original https://pypi.python.org/pypi/lunatic-python
+         module.
+        Lunatic Python is a two-way bridge between Python and Lua, allowing these
+        languages to intercommunicate. Being two-way means that it allows Lua inside
+        Python, Python inside Lua, Lua inside Python inside Lua, Python inside Lua
+        inside Python, and so on.
+        
+Platform: UNKNOWN
